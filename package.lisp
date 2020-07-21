@@ -1,7 +1,9 @@
 ;;;; package.lisp
 
 (defpackage #:minghu6
-  (:use #:cl #:cl-package-locks)
+  (:use
+   #:cl
+   #:cl-fad)
   (:export
    #:self
    #:string2list
