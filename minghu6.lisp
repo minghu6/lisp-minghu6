@@ -4,10 +4,6 @@
 
 (in-package #:minghu6)
 
-;(use-package :cl)
-;;; interactive startup
-;(ql:quickload "cl-package-locks")
-;;; interactive end
 
 ;(cl-package-locks:unlock-package 'cl)
 
@@ -31,9 +27,10 @@
   (elt s (if (< i 0) (+ (length s) i) i)))
 
 
-(defmacro filter (f l)
-  `(reduce (lambda (acc x)
-             (if (,f x) (append acc (list x)) acc)) ,l :initial-value '()))
+;; replace with serapeum:filter
+;; (defmacro filter (f l)
+;;   `(reduce (lambda (acc x)
+;;              (if (,f x) (append acc (list x)) acc)) ,l :initial-value '()))
 
 
 (defun flatten-1 (l)
@@ -71,6 +68,25 @@
 
 
 (eval-when (:compile-toplevel :execute :load-toplevel)
+  (simple-gen-gen-method "=="
+                         (`(defmethod == ((x ,class-type) y)
+                             (,fun x y)))
+                         :generic-method (defgeneric == (x y)
+                                           (:documentation
+                                            "generic method for equal
+should extend itself for struct/class"
+                                            ))
+                         :default-method (defmethod == (x y)
+                                           (equal x y)))
+
+  ;; string is subtype of vector
+  (gen-==-method string string=)
+  (gen-==-method vector equalp)
+  (gen-==-method hash-table equalp)
+
+  (defmethod != (x y)
+    (not (== x y)))
+
   (simple-gen-gen-method "view"
                          (`(defmethod view ((instance ,class-type))
                              (,fun instance)))
@@ -80,14 +96,27 @@
                          :default-method (defmethod view (instance)
                                            nil))
 
+  (gen-view-method hash-table (lambda (instance)
+                                (maphash (lambda (k v) (format t "~a => ~a~%" k v)) instance)))
 
+
+  ;; There is also a candidate: `serapeum:in`, its sytax is confused however:
+  ;; (serapeum:in #\a #\b #\a) => T and not support extend as a generic method
   (simple-gen-gen-method "of"
-                         (`(defmethod of ((instance ,class-type) form &rest keys)
-                             (loop for item in form thereis (,fun instance item))))
-                         :generic-method (defgeneric of (instance form &rest keys)
+                         (`(defmethod of ((instance ,class-type) seq)
+                             (block nil
+                               (serapeum:do-each (x seq)
+                                 (when (,fun x instance)
+                                   (return t)))))
+                           )
+                         :generic-method (defgeneric of (instance seq)
                                            (:documentation  "alias: instance contains of form"))
-                         :default-method (defmethod of (instance form &rest keys)
-                                           (loop for item in form thereis (eql instance item))))
+                         :default-method (defmethod of (instance seq)
+                                           (block nil
+                                             (serapeum:do-each (x seq)
+                                               (when (== x instance)
+                                                 (return t))))))
+
 
   (simple-gen-gen-method "pp"
                          (`(defmethod pp ((first-elem ,class-type) &rest other-elems)
@@ -95,6 +124,9 @@
                          :generic-method (defgeneric pp (first-elem &rest other-elems)
                                            (:documentation "Concatenate seqs."))
                          )
+
+  (gen-pp-method vector 'vector)
+  (gen-pp-method string 'string)
 
 
   (simple-gen-gen-method "acdr"
@@ -105,34 +137,11 @@
                          :generic-method (defgeneric acdr (car-elem form &rest keys)
                                            (:documentation  "=== (-> second assoc)"))
                          :default-method (defmethod acdr (car-elem form &rest keys)
+                                           (setf (getf keys :test) '==)
                                            (cdr (apply 'assoc car-elem form keys))))
 
 
-  (gen-view-method hash-table (lambda (instance)
-                                (maphash (lambda (k v) (format t "~a => ~a~%" k v)) instance)))
-
-
-  (gen-pp-method vector 'vector)
-  (gen-pp-method string 'string)
-
-
-  (gen-of-method string string=)
-  (gen-of-method character char=)
-
-  (gen-acdr-method string 'string=)
-  (gen-acdr-method character 'char=)
-  )
-
-
-(defun init-hash-table (forms &rest keys)
-  "Exp: (defparameter *h* (init-hash-table '((a 1
-                                             (b 2)
-                                             (c 3)) :size 100))"
-  (let ((table (apply 'make-hash-table keys) ))
-    (dolist (item forms)
-      (multiple-value-bind (k v) (values-list item)
-        (setf (gethash k table) v)))
-    table))
+ )
 
 
 (defun plist2alist (l)
@@ -146,5 +155,12 @@
     (plist2alist-0 l nil)))
 
 
-
+(defun init-hash-table (forms &rest keys)
+  "Exp: (defparameter *h* (init-hash-table '(a 1 b 2 c 3) :size 100))"
+  (let ((table (apply 'make-hash-table keys) ))
+    (dolist (item (plist2alist forms))
+      (let ((k (car item))
+            (v (cdr item)))
+        (setf (gethash k table) v)))
+    table))
 
