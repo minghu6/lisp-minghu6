@@ -7,8 +7,13 @@
   :version "0.0.1"
   :serial t
   :in-order-to ((test-op (test-op "minghu6/tests")))
-  :depends-on (#:cl-fad #:ppath #:serapeum)
+  :depends-on (#:cl-package-locks
+               #:cl-fad
+               #:ppath
+               #:serapeum
+               #:alexandria)
   :components ((:file "package")
+               (:file "types")
                (:file "minghu6")
                ))
 
@@ -37,4 +42,6 @@
   :perform (test-op (o s)
                     (uiop:symbol-call :minghu6.tests :test-minghu6))
   :components ((:file "package")
+               (:file "setup")
+               (:file "types-test")
                (:file "minghu6-test")))

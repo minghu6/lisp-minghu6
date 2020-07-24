@@ -1,13 +1,7 @@
 (in-package #:minghu6.tests)
 
 
-(def-suite minghu6-tests :description "suite contains all tests belongs to minghu6")
-
 (in-suite minghu6-tests)
-
-
-(defun test-minghu6 ()
-  (run! 'minghu6-tests))
 
 
 (test ==
@@ -28,7 +22,8 @@
 
 
 (test pp
-      (is (== (pp "aa" "bbb" "cc") "aabbbcc")))
+  (is (== (pp "aa" "bbb" "cc") "aabbbcc"))
+  (is (== (pp #\a #\b #\c) "abc")))
 
 
 (test self
@@ -36,11 +31,13 @@
 
 
 (test string2list
-  (is (== (string2list "abcde") '(#\a #\b #\c #\d #\e))))
+      (is (== (string2list "abcde") '(#\a #\b #\c #\d #\e)))
+      (is (== (string2list "") nil)))
 
 
 (test list2string
-  (is (== (list2string '(#\a #\b #\c #\d #\e)) "abcde")))
+      (is (== (list2string '(#\a #\b #\c #\d #\e)) "abcde"))
+      (is (== (list2string nil) "")))
 
 
 (test butlast*
@@ -81,14 +78,15 @@
   (is (== (acdr "a" '(("a" . 1) ("b" . 2))) 1)))
 
 
-(test plist2alist
-      (is (== (plist2alist
-               '(a 1 b 2 c 3))
-               '((a . 1) (b . 2) (c . 3))))
-      (is (== (plist2alist
-               '(a 1 b 2 c))
-               '((a . 1) (b . 2) (c . nil))))
-      )
+;; Replace with Alexandria's plist-alist
+;; (test plist2alist
+;;       (is (== (plist2alist
+;;                '(a 1 b 2 c 3))
+;;                '((a . 1) (b . 2) (c . 3))))
+;;       (is (== (plist2alist
+;;                '(a 1 b 2 c))
+;;                '((a . 1) (b . 2) (c . nil))))
+;;       )
 
 
 (test init-hash-table

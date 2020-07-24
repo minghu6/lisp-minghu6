@@ -5,16 +5,28 @@
 (in-package #:minghu6)
 
 
-;(cl-package-locks:unlock-package 'cl)
+
+(defun string2list (s)
+  "\"abc\" => (#\a #\b #\c)"
+  (map 'list 'self s))
+
 
 (defun self (x) x)
 
 
-(defun string2list (s)
-  (map 'list 'self s))
+;;; Constant
+(defvar *digits*
+  (string2list"0123456789"))
+
+(defvar *ascii-letters*
+  (string2list "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+
+(defvar *ascii-lowercase*
+  (string2list "abcdefghijklmnopqrstuvwxyz"))
 
 
 (defun list2string (l)
+  "(#\a #\b #\c) => \"abc\""
   (map 'string 'self l))
 
 
@@ -127,6 +139,9 @@ should extend itself for struct/class"
 
   (gen-pp-method vector 'vector)
   (gen-pp-method string 'string)
+  (gen-pp-method list 'list)
+  (defmethod pp ((first-elem character) &rest other-elems)
+    (list2string (cons first-elem other-elems)))
 
 
   (simple-gen-gen-method "acdr"
@@ -144,21 +159,22 @@ should extend itself for struct/class"
  )
 
 
-(defun plist2alist (l)
-  "(a 1 b 2 c 3) => ((a 1) (b 2) (c 3))"
-  (labels ((plist2alist-0 (remains acc)
-             (let ((head (car remains))
-                   (tail (cdr remains)))
-               (if head (plist2alist-0 (cdr tail)
-                                       (append acc `((,head . ,(car tail)))))
-                   acc))))
-    (plist2alist-0 l nil)))
+;; Replaced with Alexandria's plist-alist
+;; (defun plist2alist (l)
+;;   "(a 1 b 2 c 3) => ((a 1) (b 2) (c 3))"
+;;   (labels ((plist2alist-0 (remains acc)
+;;              (let ((head (car remains))
+;;                    (tail (cdr remains)))
+;;                (if head (plist2alist-0 (cdr tail)
+;;                                        (append acc `((,head . ,(car tail)))))
+;;                    acc))))
+;;     (plist2alist-0 l nil)))
 
 
 (defun init-hash-table (forms &rest keys)
   "Exp: (defparameter *h* (init-hash-table '(a 1 b 2 c 3) :size 100))"
   (let ((table (apply 'make-hash-table keys) ))
-    (dolist (item (plist2alist forms))
+    (dolist (item (plist-alist forms))
       (let ((k (car item))
             (v (cdr item)))
         (setf (gethash k table) v)))
