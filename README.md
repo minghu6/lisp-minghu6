@@ -1,5 +1,4 @@
-# minghu6
-Utils for standup
+# minghu6 Lisp Utils
 
 
 

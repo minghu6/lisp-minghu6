@@ -15,6 +15,7 @@
   :components ((:file "package")
                (:file "types")
                (:file "minghu6")
+               (:file "benchmark-utils")
                ))
 
 
