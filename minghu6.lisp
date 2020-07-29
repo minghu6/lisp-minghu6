@@ -45,33 +45,12 @@
 ;;              (if (,f x) (append acc (list x)) acc)) ,l :initial-value '()))
 
 
-(defun flatten-1 (l)
-  "(flatten-1 '(1 (2 3) (4 (5 6)))) => (1 2 3 4 (5 6)) "
-  (labels ((flatten-1-0 (l0 acc)
-             (let ((head (car l0))
-                   (tail (cdr l0)))
-               (if head
-                   (let ((tail-list (if (atom head) `(,head) head)))
-                     (flatten-1-0 tail (append acc tail-list)))
-                   acc))))
-    (flatten-1-0 l nil)))
-
-
-(eval-when (:compile-toplevel :execute :load-toplevel)
-  (defun sym (name)
-    (intern (string-upcase name)))
-
-  (defun string++ (&rest forms)
-    (apply 'concatenate 'string forms))
-)
-
-
 (defmacro simple-gen-gen-method (method-name body &key
                                                     generic-method
                                                     default-method)
 
   "Template for method with signature (class-type fun &rest keys)"
-  (let ((gen-method-name (string++ "gen-" method-name "-method")))
+  (let ((gen-method-name (string+ "gen-" method-name "-method")))
     `(list
       ,generic-method
       ,default-method
@@ -117,7 +96,7 @@ should extend itself for struct/class"
   (simple-gen-gen-method "of"
                          (`(defmethod of ((instance ,class-type) seq)
                              (block nil
-                               (serapeum:do-each (x seq)
+                               (do-each (x seq)
                                  (when (,fun x instance)
                                    (return t)))))
                            )
@@ -125,7 +104,7 @@ should extend itself for struct/class"
                                            (:documentation  "alias: instance contains of form"))
                          :default-method (defmethod of (instance seq)
                                            (block nil
-                                             (serapeum:do-each (x seq)
+                                             (do-each (x seq)
                                                (when (== x instance)
                                                  (return t))))))
 

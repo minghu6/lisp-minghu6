@@ -2,6 +2,7 @@
   (:use #:cl
         #:fiveam
         #:minghu6)
+  (:shadowing-import-from #:minghu6 :gen-list)
   (:export #:run
            #:run!
            #:run!!

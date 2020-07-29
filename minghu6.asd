@@ -13,9 +13,11 @@
                #:serapeum
                #:alexandria)
   :components ((:file "package")
+               (:file "macro-utils")
                (:file "types")
                (:file "minghu6")
                (:file "benchmark-utils")
+               (:file "conditions")
                ))
 
 
@@ -44,5 +46,6 @@
                     (uiop:symbol-call :minghu6.tests :test-minghu6))
   :components ((:file "package")
                (:file "setup")
+               (:file "macro-utils-test")
                (:file "types-test")
                (:file "minghu6-test")))
