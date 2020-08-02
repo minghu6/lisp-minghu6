@@ -30,14 +30,14 @@
   (is (eql 'a (self 'a))))
 
 
-(test string2list
-      (is (== (string2list "abcde") '(#\a #\b #\c #\d #\e)))
-      (is (== (string2list "") nil)))
+(test string-list
+      (is (== (string-list "abcde") '(#\a #\b #\c #\d #\e)))
+      (is (== (string-list "") nil)))
 
 
-(test list2string
-      (is (== (list2string '(#\a #\b #\c #\d #\e)) "abcde"))
-      (is (== (list2string nil) "")))
+(test list-string
+      (is (== (list-string '(#\a #\b #\c #\d #\e)) "abcde"))
+      (is (== (list-string nil) "")))
 
 
 (test butlast*
@@ -76,17 +76,6 @@
 (test acdr
   (is (== (acdr 'a '((a . 1) (b . 2))) 1))
   (is (== (acdr "a" '(("a" . 1) ("b" . 2))) 1)))
-
-
-;; Replace with Alexandria's plist-alist
-;; (test plist2alist
-;;       (is (== (plist2alist
-;;                '(a 1 b 2 c 3))
-;;                '((a . 1) (b . 2) (c . 3))))
-;;       (is (== (plist2alist
-;;                '(a 1 b 2 c))
-;;                '((a . 1) (b . 2) (c . nil))))
-;;       )
 
 
 (test init-hash-table

@@ -15,12 +15,13 @@
 
    ;; Constants (minghu6.lisp)
    #:*digits*
+   #:*hex-digits*
    #:*ascii-letters*
    #:*ascii-lowercase*
    ;; minghu6
    #:self
-   #:string2list
-   #:list2string
+   #:string-list
+   #:list-string
    #:butlast*
    #:elt*
    #:gen==method
@@ -33,9 +34,10 @@
    #:gen-of-method
    #:of
    #:init-hash-table
-   ;#:plist2alist ; replaced with Alexandria's plist-alist
    #:gen-acdr-method
    #:acdr
+   #:format*
+   #:step-replace-all
 
    ;; Types
    #:character-list-p

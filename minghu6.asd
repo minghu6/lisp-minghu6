@@ -10,6 +10,7 @@
   :depends-on (#:cl-package-locks
                #:cl-fad
                #:ppath
+               #:cl-ppcre
                #:serapeum
                #:alexandria)
   :components ((:file "package")

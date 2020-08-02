@@ -6,7 +6,7 @@
 
 
 
-(defun string2list (s)
+(defun string-list (s)
   "\"abc\" => (#\a #\b #\c)"
   (map 'list 'self s))
 
@@ -16,16 +16,19 @@
 
 ;;; Constant
 (defvar *digits*
-  (string2list"0123456789"))
+  (string-list "0123456789"))
+
+(defvar *hex-digits*
+  (string-list "0123456789AaBbCcDdEeFf"))
 
 (defvar *ascii-letters*
-  (string2list "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+  (string-list "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 
 (defvar *ascii-lowercase*
-  (string2list "abcdefghijklmnopqrstuvwxyz"))
+  (string-list "abcdefghijklmnopqrstuvwxyz"))
 
 
-(defun list2string (l)
+(defun list-string (l)
   "(#\a #\b #\c) => \"abc\""
   (map 'string 'self l))
 
@@ -159,3 +162,39 @@ should extend itself for struct/class"
         (setf (gethash k table) v)))
     table))
 
+
+(defmacro format* (stream &rest forms)
+  (when stream
+    `(format ,stream ,@forms)))
+
+
+(defun elt-string-queue-string (elt-string-queue)
+  (apply 'string+ (qlist elt-string-queue)))
+
+
+(defun step-replace-all (pat str rep &key simple-calls)
+  "apply ppcre replace step by step to all"
+  (labels ((step-replace-all-0 (pat rep acc-str-queue remains-str &key simple-calls)
+             (if (emptyp remains-str) (elt-string-queue-string acc-str-queue)
+                 (multiple-value-bind (match-start match-end reg-starts reg-ends)
+                     (ppcre:scan pat remains-str)
+                   (if match-start
+                       (progn
+                         ;(format t "~s, ~s~%" match-start match-end)
+                         (enq (subseq remains-str 0 match-start) acc-str-queue)
+                         (enq
+                          (ppcre:regex-replace pat remains-str rep
+                                               :start match-start :end match-end
+                                               :simple-calls simple-calls)
+                          acc-str-queue)
+                         (step-replace-all-0
+                          pat
+                          rep
+                          acc-str-queue
+                          (subseq remains-str (1+ match-end))
+                          :simple-calls simple-calls
+                          )
+                         )
+                       (elt-string-queue-string (enq remains-str acc-str-queue)))
+                   ))))
+    (step-replace-all-0 (ppcre:create-scanner pat) rep (queue) str :simple-calls simple-calls)))
