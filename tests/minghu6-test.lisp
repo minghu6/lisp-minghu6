@@ -26,10 +26,6 @@
   (is (== (pp #\a #\b #\c) "abc")))
 
 
-(test self
-  (is (eql 'a (self 'a))))
-
-
 (test string-list
       (is (== (string-list "abcde") '(#\a #\b #\c #\d #\e)))
       (is (== (string-list "") nil)))

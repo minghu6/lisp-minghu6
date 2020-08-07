@@ -1,6 +1,8 @@
 
 ;;;; package.lisp
-(defparameter *MINGHU6-FILE* *load-truename*)
+(eval-when (:compile-toplevel)
+  (defvar *MINGHU6-FILE* *compile-file-truename*)
+  )
 
 (defpackage #:minghu6
   (:use #:cl #:alexandria #:serapeum)
@@ -19,7 +21,6 @@
    #:*ascii-letters*
    #:*ascii-lowercase*
    ;; minghu6
-   #:self
    #:string-list
    #:list-string
    #:butlast*

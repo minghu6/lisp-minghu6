@@ -8,10 +8,7 @@
 
 (defun string-list (s)
   "\"abc\" => (#\a #\b #\c)"
-  (map 'list 'self s))
-
-
-(defun self (x) x)
+  (map 'list 'identity s))
 
 
 ;;; Constant
@@ -30,7 +27,7 @@
 
 (defun list-string (l)
   "(#\a #\b #\c) => \"abc\""
-  (map 'string 'self l))
+  (map 'string 'identity l))
 
 
 (defun butlast* (s)
