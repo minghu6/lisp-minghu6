@@ -51,6 +51,13 @@
 
    ;; Conditions
    #:gen-restart-fun
+
+   ;; Collections
+   #:stack
+   #:ens
+   #:des
+   #:slist-1
+   #:slist
    ))
 
 

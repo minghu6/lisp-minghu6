@@ -19,6 +19,10 @@
                (:file "minghu6")
                (:file "benchmark-utils")
                (:file "conditions")
+               (:module "collections"
+                        :serial nil
+                        :pathname "collections"
+                        :components ((:file "stack")))
                ))
 
 
