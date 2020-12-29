@@ -20,9 +20,11 @@
                (:file "benchmark-utils")
                (:file "conditions")
                (:module "collections"
-                        :serial nil
+                        :serial t
                         :pathname "collections"
-                        :components ((:file "stack")))
+                        :components ((:file "list-mut")
+                                     (:file "stack")
+                                     ))
                ))
 
 
@@ -53,4 +55,11 @@
                (:file "setup")
                (:file "macro-utils-test")
                (:file "types-test")
-               (:file "minghu6-test")))
+               (:file "minghu6-test")
+               (:module "collections"
+                        :serial t
+                        :pathname "collections"
+                        :components ((:file "list-mut-test")
+                                     (:file "stack-test")
+                                     ))
+               ))

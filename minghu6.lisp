@@ -75,6 +75,13 @@ should extend itself for struct/class"
   (gen-==-method vector equalp)
   (gen-==-method hash-table equalp)
 
+  (defmethod == ((x list) (y list))
+      (and
+       (== (length x) (length y))
+       (every #'(lambda (n) (== (nth n x) (nth n y)))
+              (range 0 (length x)))))
+
+
   (defmethod != (x y)
     (not (== x y)))
 

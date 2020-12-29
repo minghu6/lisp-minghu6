@@ -10,4 +10,6 @@
            #:explain!
            #:minghu6-tests
            #:test-minghu6
+           #:collections-tests
+           #:test-collections
            ))

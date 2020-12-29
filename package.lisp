@@ -53,6 +53,13 @@
    #:gen-restart-fun
 
    ;; Collections
+   #:list-mut
+   #:list-mut-p
+   #:mlist-1
+   #:mlist
+   #:value
+   #:instance-from
+
    #:stack
    #:ens
    #:des
