@@ -48,7 +48,10 @@
   :version "0.0.1"
   :serial t
   :pathname "tests"
-  :depends-on (#:minghu6 #:fiveam)
+  :depends-on (#:alexandria
+               #:minghu6
+               #:fiveam
+               #:serapeum)
   :perform (test-op (o s)
                     (uiop:symbol-call :minghu6.tests :test-minghu6))
   :components ((:file "package")

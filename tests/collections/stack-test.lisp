@@ -15,13 +15,13 @@
   (is (== 3
           (length (stack 1 2 3))))
 
-  (is (stack-p (stack 1 2 3)))
+  (is (stackp (stack 1 2 3)))
 
   (is (list-mut-p (stack 1 2 3)))
 
-  (is-false (stack-p '(1 2 3)))
+  (is-false (stackp '(1 2 3)))
 
-  (is-false (stack-p nil))
+  (is-false (stackp nil))
 
   (is (== (list 1 (stack 2) 3)
           (list 1 (stack 2) 3)))

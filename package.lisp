@@ -39,6 +39,11 @@
    #:acdr
    #:format*
    #:step-replace-all
+   #:plistp
+   #:file-contents-string
+   #:qlist*
+   #:paren-matcher
+   #:next-queue
 
    ;; Types
    #:character-list-p
@@ -63,8 +68,7 @@
    #:stack
    #:ens
    #:des
-   #:slist-1
-   #:slist
+   #:stackp
    ))
 
 

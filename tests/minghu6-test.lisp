@@ -84,4 +84,16 @@
         ))
 
 
+(test plistp
+      (is (plistp '(1 2 3 4)))
+      (is-false (plistp '(1 2 3))))
 
+
+(test next-queue
+      (is (==
+           (queue "b" "[" "cd" "]" "sss" "ddd")
+           (next-queue
+               (queue "b" "[" "cd" "]" "sss" "ddd" "]" "end" "end2")
+               (paren-matcher "[")
+               :state-stack (stack "[")))
+          ))

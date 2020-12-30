@@ -81,6 +81,9 @@ should extend itself for struct/class"
        (every #'(lambda (n) (== (nth n x) (nth n y)))
               (range 0 (length x)))))
 
+  (defmethod == ((x queue) (y queue))
+    (== (qlist x) (qlist y)))
+
 
   (defmethod != (x y)
     (not (== x y)))
@@ -202,3 +205,94 @@ should extend itself for struct/class"
                        (elt-string-queue-string (enq remains-str acc-str-queue)))
                    ))))
     (step-replace-all-0 (ppcre:create-scanner pat) rep (queue) str :simple-calls simple-calls)))
+
+
+(defun plistp (l)
+  (evenp (length l)))
+
+
+(defun file-contents-string (filename)
+  (with-open-file (stream filename)
+    (let ((contents (make-string (file-length stream))))
+      (read-sequence contents stream)
+      contents)))
+
+
+(defun qlist* (source-queue)
+  (map-tree (lambda (item)
+              (if (queuep item) (qlist* item)
+                  item))
+            (qlist source-queue)))
+
+
+(defun next-queue (source-queue end-test-fun &key (recycle-tail nil) (state-stack (stack)))
+  "consume source-queue,
+recycle-tail flag: reinsert tail delimiter char "
+  (loop
+     with new-queue = (queue)
+     for item = (deq source-queue) then (deq source-queue)
+     while (and item
+                (if (functionp end-test-fun)
+                    (not (if (emptyp state-stack) (funcall end-test-fun item)
+                             (funcall end-test-fun item :state-stack state-stack)))
+                    (!= end-test-fun item)))
+     do (enq item new-queue)
+     finally (progn
+               (when recycle-tail (undeq item source-queue))
+               (return new-queue))))
+
+
+(defgeneric the-other-paren (paren)
+  (:documentation " (the-other-paren \"{\" => })
+ (the-other-paren #\\*) => *
+"))
+
+
+(defmethod the-other-paren ((paren string))
+  (switch (paren :test '==)
+    ("(" ")")
+    ("[" "]")
+    ("{" "}")
+    (otherwise paren)))
+
+
+(defmethod the-other-paren ((paren character))
+  (switch (paren :test '==)
+    (#\( #\))
+    (#\[ #\])
+    (#\{ #\})
+    (otherwise paren)))
+
+
+(defun paren-matcher (match-identifier &key (key 'identity))
+  (let ((match-0 match-identifier)
+        (match-1 (the-other-paren match-identifier)))
+    (lambda (item &key state-stack)
+        (switch (item :test '== :key (lambda (item) (funcall key item)))
+          (match-0 (ens match-0 state-stack))
+          (match-1 (des state-stack)))
+        (emptyp state-stack))
+    ))
+
+
+;;; Temporary part
+(defun chain-getf (l &rest keys)
+  (if (emptyp keys) l
+      (let ((head (car keys))
+            (tail (cdr keys)))
+        (apply #'chain-getf (append (list (getf l head)) tail)))))
+
+
+(defmacro chain-setf (l keys value)
+  "(chain-setf tree0 (:value :type) 'DD1)"
+  `(setf ,(append (list '~> l) (mapcar (lambda (x) `(getf ,x)) keys)) ,value)
+  )
+
+(defmacro return-if* (test-form block-name)
+  (once-only (test-form)
+    `(if ,test-form (return-from ,block-name ,test-form))))
+
+
+(defun test-return-if* ()
+  (return-if* (+ 6 6) test-return-if*))
+;;; Temporary part end
